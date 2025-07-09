@@ -1,192 +1,241 @@
-# D21\_S2\_A1: Spring Boot-based Library Management System with Spring Security
-
-Develop a Spring Boot-based web application for a Library Management System with basic Spring Security features to manage book records, users, and borrowing operations. The system should enable users to register, borrow books, view available books, and manage user accounts. Additionally, there should be role-based access control with roles such as **"USER"** (who can borrow books) and **"ADMIN"** (who can manage books and users).
+Certainly! Here's your **formatted version** of the Library Management System requirement document — no content changed, just structured and indented for better readability:
 
 ---
 
-## Functional Requirements
-
-### 1. User Registration and Authentication
-
-#### User Registration
-
-* Endpoint: `POST /users/register`
-* Accepts: `User` object in request body
-* Returns: Success message in response
-* Roles assigned during registration: **USER** or **ADMIN**
-* Passwords must be encoded using `BCryptPasswordEncoder`
-
-#### User Login
-
-* Endpoint: `POST /users/login`
-* Accepts: `AuthRequest` object in request body
-* Returns: `AuthResponse` object containing JWT token
-
-> `AuthRequest` and `AuthResponse` are custom classes located in `/src/main/java/com/wecp/library_management_system_jwt/dto/`
-
-#### Role-Based Access Control
-
-* **USER**: Can borrow books and view book details
-* **ADMIN**: Can add, update, delete books, and view all users
+# **D21\_S2\_A1\_Spring Boot-based Web Application for a Simplified Library Management System Using Spring Security**
 
 ---
 
-### 2. Book Management (Admin Role)
+## **Overview**
 
-#### Create Book
+Develop a Spring Boot-based web application for a Library Management System with basic Spring Security features to manage book records, users, and borrowing operations.
 
-* Endpoint: `POST /books`
-* Accepts: `Book` object in request body
-* Returns: Created `Book` object
+The system should enable users to:
 
-#### Update Book
+* Register
+* Borrow books
+* View available books
+* Manage user accounts
 
-* Endpoint: `PUT /books/{id}`
-* Accepts: `Book` object in request body and `bookId` in path
-* Returns: Updated `Book` object
+There should also be **role-based access control** with roles such as:
 
-#### Delete Book
+* `"USER"` – can borrow books
+* `"ADMIN"` – can manage books and users
 
-* Endpoint: `DELETE /books/{id}`
-* Accepts: `bookId` in path
-* Returns: HTTP status `204 No Content`
+---
 
-#### View All Books
+## **Functional Requirements**
 
-* Endpoint: `GET /books`
-* Returns: List of all books with availability status
+---
+
+### **1. User Registration and Authentication**
+
+#### **User Registration**
+
+* Endpoint: `/users/register`
+* HTTP Method: `@PostMapping`
+* Function: Allow users to register a new account
+* Requirements:
+
+    * Accept a `User` object in the request body
+    * Require a unique `username` and `password`
+    * Assign roles: `"USER"` or `"ADMIN"`
+    * Encode passwords using Spring Security
+    * Return a message in the response
+
+#### **User Login**
+
+* Endpoint: `/users/login`
+* HTTP Method: `@PostMapping`
+* Function: Allow users to log in to the system
+* Requirements:
+
+    * Accept an `AuthRequest` object in request body
+    * Return an `AuthResponse` object containing a **JWT token**
+
+> **Note**: `AuthRequest` and `AuthResponse` classes are already provided under `/src/main/java/com/wecp/library_management_system_jwt/dto/`
+
+#### **Role-Based Access Control**
+
+* `"USER"` role:
+
+    * Can borrow books
+    * Can view book details
+
+* `"ADMIN"` role:
+
+    * Can add, update, delete books
+    * Can view all users
+
+---
+
+### **2. Book Management (Admin Role)**
+
+#### **a. Create Book**
+
+* Endpoint: `/books`
+* HTTP Method: `@PostMapping`
+* Access: `ADMIN`
+* Function: Add new books
+* Accept: `Book` object
+* Return: Created book object
+
+#### **b. Update Book**
+
+* Endpoint: `/books/{id}`
+* HTTP Method: `@PutMapping`
+* Access: `ADMIN`
+* Function: Update book details
+* Accept: `Book` object, `bookId` in path
+* Return: Updated book object
+
+#### **c. Delete Book**
+
+* Endpoint: `/books/{id}`
+* HTTP Method: `@DeleteMapping`
+* Access: `ADMIN`
+* Function: Delete a book
+* Accept: `bookId` in path
+* Return: HTTP status `No Content`
+
+#### **d. View All Books**
+
+* Endpoint: `/books`
+* HTTP Method: `@GetMapping`
 * Access: All authenticated users
+* Return: List of all books with availability status
 
 ---
 
-### 3. Borrowing Books (User Role)
+### **3. Borrowing Books (User Role)**
 
-#### Borrow Book
+#### **Borrow Book**
 
-* Endpoint: `POST /books/{bookId}/borrow`
-* Accepts: `bookId` in path
-* Returns: Success or error message
-* Constraints: Only available books can be borrowed (availability = false when borrowed)
+* Endpoint: `/books/{bookId}/borrow`
+* HTTP Method: `@PostMapping`
+* Access: `USER`
+* Function: Borrow an available book
+* Accept: `bookId` in path
+* Return: Success or error message
+* Notes:
 
-#### Return Book
+    * Only available books can be borrowed
+    * If the book is already borrowed, return an error
+    * Set `availability = false` when borrowed
 
-* Endpoint: `POST /books/{bookId}/return`
-* Accepts: `bookId` in path
-* Returns: Success message
-* Effect: Sets book availability to `true`
+#### **Return Book**
+
+* Endpoint: `/books/{bookId}/return`
+* HTTP Method: `@PostMapping`
+* Access: `USER`
+* Function: Return a borrowed book
+* Accept: `bookId` in path
+* Return: Success message
+* Set `availability = true` when returned
 
 ---
 
-### 4. User Account Management
+### **4. User Account Management**
 
-#### View User Details
+#### **View User Details**
 
-* Endpoint: `GET /users/{userId}`
+* Endpoint: `/users/{userId}`
+* HTTP Method: `@GetMapping`
 * Access:
 
-    * Regular users: Can view their own details
-    * Admins: Can view any user's details
+    * `ADMIN`: View any user's details
+    * `USER`: View own details
+* Return: User details
 
-#### Update User Details
+#### **Update User Details**
 
-* Endpoint: `PUT /users/{userId}`
-* Accepts: `User` object in request body and `userId` in path
-* Returns: Updated `User` object
+* Endpoint: `/users/{userId}`
+* HTTP Method: `@PutMapping`
 * Access:
 
-    * Users and Admins can update account details
+    * `ADMIN`: Update any user
+    * `USER`: Update own details
+* Accept: `User` object, `userId` in path
+* Return: Updated user object
 
 ---
 
-## Entities for the System
-
-### Book Entity
-
-* `id` (Long) – Unique identifier (auto-generated)
-* `title` (String) – Title of the book
-* `author` (String) – Author of the book
-* `description` (String) – A brief description of the book
-* `availability` (boolean) – Whether the book is available
-
-**Table Name:** `books`
-
-### User Entity
-
-* `id` (Long) – Unique identifier (auto-generated)
-* `username` (String) – Unique username
-* `password` (String) – Encoded password
-* `role` (String) – "USER" or "ADMIN"
-
-**Table Name:** `users`
+## **Entities for the System**
 
 ---
 
-## Security Key Points
+### **1. Book Entity**
 
-* Use JWT tokens for authentication and session management
-* Passwords must be encoded using `BCryptPasswordEncoder`
-* Use `SecurityConfig.java` for configuring Spring Security
-* Authorities should be configured using `hasAuthority("USER")` or `hasAuthority("ADMIN")`
-* Open access:
+| Field          | Type    | Description                      |
+| -------------- | ------- | -------------------------------- |
+| `id`           | Long    | Auto-generated unique identifier |
+| `title`        | String  | Title of the book                |
+| `author`       | String  | Author of the book               |
+| `description`  | String  | Brief description of the book    |
+| `availability` | boolean | Book availability status         |
 
-    * `/users/register`
-    * `/users/login`
-* Secure access:
-
-    * Book operations and user management by roles
-
-### Exception Handling
-
-* Borrowing unavailable books → error message
-* Unauthorized access → error message
+* Table name: `books`
 
 ---
 
-## Test Cases
+### **2. User Entity**
 
-1. **User Registration:**
+| Field      | Type   | Description                      |
+| ---------- | ------ | -------------------------------- |
+| `id`       | Long   | Auto-generated unique identifier |
+| `username` | String | Unique username                  |
+| `password` | String | Encoded password                 |
+| `role`     | String | Role: `"USER"` or `"ADMIN"`      |
 
-    * `POST /users/register`
-    * Validate new user saved to DB
-
-2. **Login:**
-
-    * `POST /users/login`
-    * Validate JWT token is returned
-
-3. **Create Book (ADMIN):**
-
-    * `POST /books`
-    * Validate new book in DB
-
-4. **Update Book (ADMIN):**
-
-    * `PUT /books/{bookId}`
-    * Validate updated book in DB
-
-5. **Delete Book (ADMIN):**
-
-    * `DELETE /books/{bookId}`
-    * Validate book removed
-
-6. **View All Books:**
-
-    * `GET /books`
-    * Validate returned list and availability
-
-7. **Borrow Book (USER):**
-
-    * `POST /books/{bookId}/borrow`
-    * Validate availability = false
-
-8. **Return Book (USER):**
-
-    * `POST /books/{bookId}/return`
-    * Validate availability = true
-
-9. **View User Details:**
-
-    * `GET /users/{userId}`
-    * Validate role-based access
+* Table name: `users`
 
 ---
+
+## **Security Key Points**
+
+* Use **JWT tokens** for authentication and session management
+* Encode passwords using **BCryptPasswordEncoder**
+* Secure endpoints based on roles
+* Implement `SecurityConfig.java` for Spring Security setup
+
+    * Allow `/users/register` and `/users/login` without authentication
+    * Use `hasAuthority("USER")` or `hasAuthority("ADMIN")`
+* Handle unauthorized access and invalid operations properly
+
+---
+
+## **Exception Handling**
+
+* Return error messages when:
+
+    * A user tries to borrow a book that is already borrowed
+    * Unauthorized access is attempted
+
+---
+
+## **JWT Authentication**
+
+* Use JWT for stateless session management
+* Return a token after successful login
+* Validate token on every secured request
+
+---
+
+## **Test Cases**
+
+| Feature             | Endpoint                      | Test Description                                 |
+| ------------------- | ----------------------------- | ------------------------------------------------ |
+| User Registration   | `POST /users/register`        | Register user and confirm DB entry               |
+| Login               | `POST /users/login`           | Authenticate user and get valid JWT token        |
+| Create Book         | `POST /books`                 | ADMIN creates book, check DB                     |
+| Update Book         | `PUT /books/{bookId}`         | ADMIN updates book, verify update                |
+| Delete Book         | `DELETE /books/{bookId}`      | ADMIN deletes book, verify removal               |
+| View All Books      | `GET /books`                  | Fetch all books, verify availability             |
+| Borrow Book         | `POST /books/{bookId}/borrow` | USER borrows book, update availability           |
+| Return Book         | `POST /books/{bookId}/return` | USER returns book, set availability to true      |
+| View User Details   | `GET /users/{userId}`         | View own or any user's details depending on role |
+| Update User Details | `PUT /users/{userId}`         | USER or ADMIN updates user profile               |
+
+---
+
+Let me know if you want a project structure or starter code scaffolding as well.
