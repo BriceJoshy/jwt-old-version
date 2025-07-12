@@ -62,6 +62,17 @@ public class Book {
         return availability;
     }
 
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", description='" + description + '\'' +
+                ", availability=" + availability +
+                '}';
+    }
+
     public void setAvailability(boolean availability) {
         this.availability = availability;
     }
