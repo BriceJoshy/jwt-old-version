@@ -17,13 +17,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-public class SecurityConfig {
+public class SecurityConfig{
 
     @Autowired
     private UserService userService;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
-        return http.csrf(AbstractHttpConfigurer::disable)
+        return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth-> auth
                         .antMatchers("/users/register", "/users/login").permitAll()
                         .antMatchers(HttpMethod.POST, "/books").hasAuthority("ADMIN")

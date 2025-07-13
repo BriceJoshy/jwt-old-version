@@ -27,7 +27,6 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("user not found");
         }
         SimpleGrantedAuthority authorities = new SimpleGrantedAuthority("ROLE_" + user.get().getRole());
-
         return new org.springframework.security.core.userdetails.User(
                 user.get().getUsername(),
                 user.get().getPassword(),
@@ -36,10 +35,10 @@ public class UserService implements UserDetailsService {
     }
 
     public Optional<User> register(User user){
-        if(!userRepository.findByUsername(user.getUsername()).isEmpty()){
-            return Optional.empty();
-        }
-        System.out.println();
+//        if(!userRepository.findByUsername(user.getUsername()).isEmpty()){
+//            return Optional.empty();
+//        }
+//        System.out.println();
         return Optional.of(userRepository.save(user));
     }
 }
