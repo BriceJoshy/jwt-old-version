@@ -3,6 +3,7 @@ package com.example.jwt_old_version.controller;
 import com.example.jwt_old_version.dto.AuthRequest;
 import com.example.jwt_old_version.dto.AuthResponse;
 import com.example.jwt_old_version.entity.User;
+import com.example.jwt_old_version.jwt.JwtUtil;
 import com.example.jwt_old_version.repository.UserRepository;
 import com.example.jwt_old_version.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,17 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user){
         Optional<User> user1 = userService.register(user);
-        if(!user1.isEmpty()){
+//        User user2 = new User();
+//        user2.setUsername("testuser");
+//        user2.setPassword("password");
+//        user2.setRole("ADMIN");
+        if(user1.isEmpty()){
 //          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User Already Exists");
             return ResponseEntity.ok(user1.get());
         }
@@ -48,12 +56,16 @@ public class UserController {
                     )
             );
             UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
-            String token = "jwt-token-generated";
+//            String token = "jwt-token-generated";
+
+            String token = jwtUtil.generateToken(userDetails.getUsername());
             return ResponseEntity.ok(new AuthResponse(token));
         }catch (BadCredentialsException e){
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Bad credientials"));
         }
+//        AuthResponse a = new AuthResponse("skjbgje");
+//        return ResponseEntity.ok(a);
     }
 
     @GetMapping("/{userId}")
