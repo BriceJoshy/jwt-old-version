@@ -60,7 +60,7 @@ public class BookService {
         if(book.isPresent()){
             book.get().setAvailability(true);
             bookRepository.save(book.get());
-            System.out.println("Saved Book details" + bookRepository.findById(id).toString());
+//            System.out.println("Saved Book details" + bookRepository.findById(id).toString());
             return true;
         }
         return false;

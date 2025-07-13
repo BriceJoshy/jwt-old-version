@@ -36,7 +36,7 @@ public class UserService implements UserDetailsService {
     }
 
     public Optional<User> register(User user){
-        if(!userRepository.findByUsername(user.getUsername()).isEmpty()){
+        if(userRepository.findByUsername(user.getUsername()).isPresent()){
             return Optional.empty();
         }
         System.out.println();

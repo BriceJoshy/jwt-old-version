@@ -54,11 +54,15 @@ public class UserController {
                             authRequest.getUsername(),
                             authRequest.getPassword()
                     )
+//                    new UsernamePasswordAuthenticationToken(
+//                            authRequest.getUsername(),
+//                            authRequest.getPassword()
+//                    )
             );
             UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
 //            String token = "jwt-token-generated";
 
-            String token = jwtUtil.generateToken(userDetails.getUsername());
+            String token = jwtUtil.generateToken(authRequest.getUsername());
             return ResponseEntity.ok(new AuthResponse(token));
         }catch (BadCredentialsException e){
             return ResponseEntity
@@ -73,7 +77,7 @@ public class UserController {
         // Get currently logged-in username
         String loggedInUsername = authentication.getName();
         User loggedInUserDetails = userRepository.findByUsername(loggedInUsername).get();
-        if(Objects.equals(loggedInUserDetails.getId(), userRepository.findById(userId).get().getId()) && Objects.equals(loggedInUserDetails.getRole(), "USER")){
+        if(Objects.equals(loggedInUserDetails.getId(), userId) && Objects.equals(loggedInUserDetails.getRole(), "USER")){
             return ResponseEntity.ok(userRepository.findById(userId).get());
         } else if (Objects.equals(loggedInUserDetails.getRole(), "ADMIN")) {
             return ResponseEntity.ok(userRepository.findById(userId));
